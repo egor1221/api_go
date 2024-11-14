@@ -77,7 +77,8 @@ func postTasks(w http.ResponseWriter, r *http.Request){
 	if !ok {
 		tasks[task.ID] = task
 	}else{
-		fmt.Println("Задача уже есть в списке")
+		http.Error(w, "Задача уже есть в списке", http.StatusBadRequest)
+		return
 	}
 
 	w.Header().Set("content-type", "application/json")
