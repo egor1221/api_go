@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -40,7 +40,7 @@ var tasks = map[string]Task{
 	},
 }
 
-func getTasks(w http.ResponseWriter, r *http.Request){
+func getTasks(w http.ResponseWriter, r *http.Request) {
 	resp, err := json.Marshal(tasks)
 
 	if err != nil {
@@ -51,12 +51,12 @@ func getTasks(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	if _, err := w.Write(resp); err!=nil{
+	if _, err := w.Write(resp); err != nil {
 		fmt.Println(err.Error())
 	}
 }
 
-func postTasks(w http.ResponseWriter, r *http.Request){
+func postTasks(w http.ResponseWriter, r *http.Request) {
 	var task Task
 	var buf bytes.Buffer
 
@@ -67,25 +67,25 @@ func postTasks(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	if err := json.Unmarshal(buf.Bytes(), &task); err!=nil {
+	if err := json.Unmarshal(buf.Bytes(), &task); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	_, ok := tasks[task.ID]
 
-	if !ok {
-		tasks[task.ID] = task
-	}else{
+	if ok {
 		http.Error(w, "Задача уже есть в списке", http.StatusBadRequest)
 		return
 	}
+
+	tasks[task.ID] = task
 
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 }
 
-func getTasksId(w http.ResponseWriter, r *http.Request){
+func getTasksId(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	task, ok := tasks[id]
@@ -95,7 +95,7 @@ func getTasksId(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	resp, err := json.Marshal(task);
+	resp, err := json.Marshal(task)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -105,12 +105,12 @@ func getTasksId(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	if _, err := w.Write(resp); err!=nil{
+	if _, err := w.Write(resp); err != nil {
 		fmt.Println(err.Error())
 	}
 }
 
-func deleteTask(w http.ResponseWriter, r *http.Request){
+func deleteTask(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	_, ok := tasks[id]
